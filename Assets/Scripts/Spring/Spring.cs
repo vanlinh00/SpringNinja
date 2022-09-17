@@ -27,12 +27,18 @@ public class Spring : MonoBehaviour
         }
     }
 
+    float a = 0;
     public void SqueezeSpring()
     {
         if(_middle.transform.lossyScale.x> _minScale)
         {
+            a =a+ Time.deltaTime;
             _middle.transform.localScale = new Vector3(_middle.transform.lossyScale.x - Time.deltaTime / _speed, _middle.transform.lossyScale.y, 0);
             _header.transform.position = new Vector3(_header.transform.position.x, _middle.transform.position.y + _middle.transform.lossyScale.x * 0.7399999f, 0);
+        }
+        else
+        {
+            Debug.Log(a);
         }
     }
     public void StretchSpring()
@@ -63,6 +69,10 @@ public class Spring : MonoBehaviour
     public GameObject GetHeader()
     {
         return _header;
+    }
+    public GameObject GetFooter()
+    {
+        return _footer;
     }
 
 }

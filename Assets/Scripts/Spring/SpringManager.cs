@@ -7,7 +7,7 @@ public class SpringManager : Singleton<SpringManager>
     [SerializeField] GameObject _springRight;
     [SerializeField] GameObject _springLeft;
 
-    private  Spring _springR;
+    public  Spring _springR;
     public  Spring springL;
     protected override void Awake()
     {

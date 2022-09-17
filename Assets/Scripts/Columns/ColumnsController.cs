@@ -1,0 +1,112 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ColumnsController : Singleton<ColumnsController>
+{
+    // distance min 1.948
+    private float _minDistance = 1.948f;
+    //3.19
+    private Vector3 _posColumn1 = new Vector3(-0.06f, -4.99f, 0);
+
+    [SerializeField] GameObject _allColumns;
+    [SerializeField] float _speed = 3f;
+
+    public bool IsTouchMiddleCol = false;
+
+    private void OnEnable()
+    {
+        StartCoroutine(WaitLoadColumns());
+    }
+    IEnumerator WaitLoadColumns()
+    {
+        yield return new WaitForEndOfFrame();
+        GameObject FirstCol = ObjectPooler._instance.SpawnFromPool("Column_01", _posColumn1, Quaternion.Euler(0, 0, 90));
+        Column Col = FirstCol.GetComponent<Column>();
+        Col.SetnableCollisionScore(false);
+
+        yield return new WaitForSeconds(0.01f);
+        Col.GetHeaderCol().GetComponent<HeaderCol>().isPlayerStanding = true;
+        FirstCol.transform.parent = transform;
+        BornSecondCol();
+        BornNewColumn(5); 
+    }
+    protected override void Awake()
+    {
+        base.Awake();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {   
+        if(PlayerController._instance.isPlayerMove/*&& !IsTouchMiddleCol*/)
+        {
+            if (PlayerController._instance.currentTimeHold <= (PlayerController._instance.GetTimeHoldMax() / 2f))
+            {
+                _speed = 1.5f;
+            }
+            else if (PlayerController._instance.currentTimeHold <= (PlayerController._instance.GetTimeHoldMax() * 3 / 4))
+            {
+                _speed = 2.2f;
+            }
+            else
+            {
+                _speed = 3.2f;
+            }
+            transform.Translate(-Vector3.right * _speed * Time.deltaTime);
+        }
+       
+    }
+
+    void BornSecondCol()
+    {
+        Vector3 NewPosChild = new Vector3(_posColumn1.x + Random.RandomRange(3f, 6f), Random.RandomRange(-5, -3f), 0);
+        GameObject newCol = ObjectPooler._instance.SpawnFromPool("Column_01", NewPosChild, Quaternion.Euler(0, 0, 90));
+        newCol.transform.parent =_allColumns.transform;
+    }
+    public void BornNewColumn(int AmountCol)
+    {
+        for(int i=0;i< AmountCol; i++)
+        {
+            Vector3 PosLastChild = _allColumns.transform.GetChild(_allColumns.transform.childCount - 1).gameObject.transform.position;
+            Vector3 NewPosChild = new Vector3(PosLastChild.x + Random.RandomRange(_minDistance, 3f), Random.RandomRange(-5, -3f), 0);
+            GameObject newColumn = ObjectPooler._instance.SpawnFromPool("Column_01", NewPosChild, Quaternion.Euler(0, 0, 90));
+            newColumn.transform.parent = _allColumns.transform;
+        }
+      
+    }
+    //  -0.05999994     1.2-> 2.35
+    // x ?  x+ 2.22313  + -0.06 =2.35
+    public Vector3 newPosAllColumns()
+    {
+        float A = Random.RandomRange(1.2f, 2.35f);
+        float PosX = A - _allColumns.transform.GetChild(0).transform.localPosition.x + transform.position.x;
+        return new Vector3(PosX, _allColumns.transform.position.y, 0);
+    }
+    public void MoveAllColumnToTarget()
+    {
+        StartCoroutine(WaitTimeMoveTarget());
+    }
+    IEnumerator WaitTimeMoveTarget()
+    {
+        yield return new WaitForSeconds(0.1f);
+        StartCoroutine(Move(_allColumns.transform, newPosAllColumns(), 0.5f));
+    }
+
+    IEnumerator Move(Transform CurrentTransform, Vector3 Target, float TotalTime)
+    {
+        var passed = 0f;
+        var init = CurrentTransform.transform.position;
+        while (passed < TotalTime)
+        {
+            passed += Time.deltaTime;
+            var normalized = passed / TotalTime;
+            var current = Vector3.Lerp(init, Target, normalized);
+            CurrentTransform.position = current;
+            yield return null;
+        }
+    }
+
+
+
+}

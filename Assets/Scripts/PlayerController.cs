@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : Singleton<PlayerController>
 {
@@ -8,62 +9,164 @@ public class PlayerController : Singleton<PlayerController>
     [SerializeField] GameObject _ninja;
     [SerializeField] SpringManager _springManager;
 
-    private float _timeHold;   // _timeHoldMax = 0.5668609
+    private float _timeHold; // _timeHoldMax = 0.5668609
     private float _timeHoldMax = 0.5668609f;
 
-    public Rigidbody2D rigidbody;
-
+    [SerializeField] Rigidbody2D _rigidbody;
     [SerializeField] float _speedY;
     [SerializeField] float _speedX;
     public bool isJump;
+    [SerializeField] GameObject _collisionDetect;
+    private int _currentScore;
+    [SerializeField] int _countPassColumn;
 
-    [SerializeField] GameObject CollisionDetect;
+    public bool isPlayerMove;
+    private bool _canClick;
+    public bool isOnGame;
+    public float currentTimeHold;
 
-    private float _currentScore;
+
     protected override void Awake()
     {
         base.Awake();
     }
     void Start()
     {
-        _currentScore = 0f;
+        _canClick = true;
+        isPlayerMove = false;
+        _currentScore = 0;
+        _countPassColumn = 0;
         isJump = false;
         _timeHold = 0f;
-        rigidbody = GetComponent<Rigidbody2D>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        if (Input.GetMouseButton(0) && !isJump && _timeHold<= _timeHoldMax)
+        CheckCanClick();
+
+        if (_canClick == false)
         {
-            _timeHold = _timeHold + Time.deltaTime;
-            _springManager.SqueezeAllSpring();
-            MoveHeroToHeaderSpring();
+            return;
         }
-        if (Input.GetMouseButtonUp(0))
+        if (isOnGame)
         {
-            isJump = true;
-            rigidbody.AddForce(new Vector2(_speedX, _speedY * _timeHold), ForceMode2D.Impulse);
-            SpringManager._instance.ResetScale();
-            SpringManager._instance.MoveToHeader();
-            CollisionDetect.transform.position = _ninja.transform.position; 
-            _springManager.DisableSpring();
-            _timeHold = 0f;
+            if (Input.GetMouseButton(0) && !isJump && _timeHold <= _timeHoldMax)
+            {
+                _timeHold = _timeHold + Time.deltaTime;
+                _springManager.SqueezeAllSpring();
+               
+                MoveHeroToHeaderSpring();
+            }
+            if (Input.GetMouseButtonUp(0))
+            {
+                Jump();
+            }
+        }
+    
+    }
+    void CheckCanClick()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                _canClick = false;
+            }
+            else
+            {
+                _canClick = true;
+            }
+        }
+
+        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        {
+            if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
+            {
+                _canClick = false;
+            }
+            else
+            {
+                _canClick = true;
+            }
         }
     }
-
-  public  void MoveHeroToHeaderSpring()
+    public  void MoveHeroToHeaderSpring()
     {
         _ninja.transform.position = new Vector3(_ninja.transform.position.x, _springManager.springL.GetPosHeader().y,0);
     }
-    public void Fjump(float jump1)
+    public void Jump()
     {
-        rigidbody.AddForce(new Vector2(0, jump1), ForceMode2D.Impulse);
+        if (_timeHold <= _timeHoldMax / 2)
+        {
+            _speedY = 35f;
+        }
+        else
+        {
+            _speedY = 26f;
+        }
+
+        isPlayerMove = true;
+        currentTimeHold = _timeHold;
+        isJump = true;
+        _collisionDetect.SetActive(true);
+        _rigidbody.AddForce(new Vector2(0/*3*/, _timeHold * _speedY / _timeHoldMax), ForceMode2D.Impulse);
+        SpringManager._instance.ResetScale();
+        SpringManager._instance.MoveToHeader();
+        _collisionDetect.transform.position = new Vector3(_ninja.transform.position.x, _ninja.transform.position.y - 0.0259576f, 0);
+        _springManager.DisableSpring();
+        _timeHold = 0f;
     }
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        _currentScore++;
-        Debug.Log(_currentScore);
+        if (collision.gameObject.CompareTag("Walls"))
+         {
+            isPlayerMove = false;
+            UiController._instance.EnableGameOver();
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("MiddleCol"))
+        {
+            gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        }
+    }
+    public void ChangeVelocity(Vector3 VectorChange)
+    {
+       _rigidbody.velocity = VectorChange;
+    }
+    public int GetCurrentPassColumn()
+    {
+        return _countPassColumn;
+    }
+    public void SetCurrentPassColumn()
+    {
+        _countPassColumn++;
+    }
+    public int GetCurrentScore()
+    {
+        return _currentScore;
+    }
+    public float GetTimeHold()
+    {
+        return _timeHold;
+    }
+   public float GetTimeHoldMax()
+    {
+        return _timeHoldMax;
+    }
+    public void SetCurrentScore()
+    {
+        if(_countPassColumn == 1)
+        {
+            _currentScore++;
+        }
+        else
+        {
+            _currentScore = _currentScore+ _countPassColumn * 2;
+        }
+        _countPassColumn = 0;
     }
 
 }

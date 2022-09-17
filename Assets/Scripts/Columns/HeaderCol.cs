@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Column : MonoBehaviour
+public class HeaderCol : MonoBehaviour
 {
     public bool isPlayerStanding;
     void Start()
     {
         isPlayerStanding = false;
+    }
+    // Update is called once per frame
+    void Update()
+    {
+        
     }
 }

@@ -4,40 +4,78 @@ using UnityEngine;
 
 public class CollisionDetect : MonoBehaviour
 {
-    void Update()
-    {
-        RaycastHit2D hitdown = Physics2D.Raycast(transform.position, -transform.up, 0.05f);
+    public bool IsTouchHeaderColision;
 
-        if (hitdown.collider != null)
-        {
-            if (hitdown.collider.gameObject.CompareTag("Column"))
-            {
-                Column col = hitdown.collider.gameObject.GetComponent<Column>();
-                if (!col.isPlayerStanding)
-                {
-                    PlayerController._instance.rigidbody.velocity = Vector3.zero;
-                    SpringManager._instance.EnableSpring();
-                    SpringManager._instance.StretchAllSpring();
-                    StartCoroutine(WaitContinueGame());
-
-                }
-            }
-        }
-
-    }
-    IEnumerator WaitContinueGame()
-    {
-        yield return new WaitForSeconds(0.6f);
-        PlayerController._instance.isJump = false;
-    }
-    //private void OnCollisionEnter2D(Collision2D collision)
+    //void Update()
     //{
-    //    if (collision.transform.CompareTag("Column"))
+    //    RaycastHit2D hitdown = Physics2D.Raycast(transform.position, -transform.up, 0.05f);
+    //    if (hitdown.collider != null)
     //    {
-    //        PlayerController._instance.rigidbody.velocity = Vector3.zero;
-    //        SpringManager._instance.EnableSpring();
-    //        SpringManager._instance.StretchAllSpring();
-    //        StartCoroutine(WaitContinueGame());
+    //        if (hitdown.collider.gameObject.CompareTag("Column"))
+    //        {
+    //            Column col = hitdown.collider.gameObject.GetComponent<Column>();
+    //            if (!col.isPlayerStanding)
+    //            {
+    //                PlayerController._instance.isPlayerMove = false;
+    //                PlayerController._instance.ChangeVelocity(Vector3.zero);
+
+    //                //if(col.PosHeader().y<= this.gameObject.transform.position.y)
+    //                // {
+    //                PlayerController._instance.SetCurrentScore();
+    //                GamePlay._instance.UpdateCurretScore();
+    //                SpringManager._instance.EnableSpring();
+    //                SpringManager._instance.StretchAllSpring();
+    //                StartCoroutine(WaitContinueGame());
+    //                //  }
+    //            }
+    //        }
     //    }
     //}
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("HeaderColDetect"))
+        {
+            IsTouchHeaderColision = true;
+        }
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("HeaderColDetect"))
+        {
+            IsTouchHeaderColision = false;
+        }
+    }
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+
+        if (collision.transform.CompareTag("HeaderCol"))
+        {
+            HeaderCol Headercol = collision.gameObject.GetComponent<HeaderCol>();
+
+            if (!Headercol.isPlayerStanding)
+            {
+                Headercol.isPlayerStanding = true;
+
+                PlayerController._instance.isPlayerMove = false;
+
+                if (IsTouchHeaderColision)
+                {
+                    IsTouchHeaderColision = false;
+
+                    this.gameObject.SetActive(false);
+
+                    PlayerController._instance.SetCurrentScore();
+                    GamePlay._instance.UpdateCurretScore();
+                    SpringManager._instance.EnableSpring();
+                    SpringManager._instance.StretchAllSpring();
+                    PlayerController._instance.ChangeVelocity(Vector3.zero);
+                    PlayerController._instance.isJump = false;
+                    ColumnsController._instance.BornNewColumn(PlayerController._instance.GetCurrentPassColumn());
+                }
+
+            }
+        }
+    }
+
 }

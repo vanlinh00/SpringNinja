@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Column
+  - DetectPassCol
+  - Walls
+  - MiddleCol
+  - HeaderColDetect
+  - HeaderCol
+  - ColliderDetectPlayer
   layers:
   - Default
   - TransparentFX
