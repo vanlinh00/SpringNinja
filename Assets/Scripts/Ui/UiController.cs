@@ -20,6 +20,7 @@ public class UiController : Singleton<UiController>
         if (inforPlayer.idLoadGameAgain)
         {
             DataPlayer.UpdataLoadGameAgain(false);
+            CamearaController._instance.SetCameraGamePlay();
             EnableGamePlay();
         }
         else
@@ -39,8 +40,6 @@ public class UiController : Singleton<UiController>
     {
         PlayerController._instance.isOnGame = true;
         ColumnsController._instance.MoveAllColumnToTarget();
-        CamearaController._instance.SetCameraGamePlay();
-
         _gameHome.SetActive(false);
         _gameOverPanel.SetActive(false);
         _gamePlay.SetActive(true);
