@@ -4,24 +4,18 @@ using UnityEngine;
 
 public class ColumnsController : Singleton<ColumnsController>
 {
-    // distance min 1.948
     private float _minDistance = 1.948f;
-    //3.19
     private Vector3 _posColumn1 = new Vector3(-0.06f, -4.99f, 0);
 
     [SerializeField] GameObject _allColumns;
     [SerializeField] float _speed = 3f;
 
     public bool IsTouchMiddleCol = false;
-
-    private void OnEnable()
-    {
-        StartCoroutine(WaitLoadColumns());
-    }
-    IEnumerator WaitLoadColumns()
+    public int _idColumn;
+   public IEnumerator WaitLoadColumns()
     {
         yield return new WaitForEndOfFrame();
-        GameObject FirstCol = ObjectPooler._instance.SpawnFromPool("Column_01", _posColumn1, Quaternion.Euler(0, 0, 90));
+        GameObject FirstCol = ObjectPooler._instance.SpawnFromPool("Column_0"+ _idColumn, _posColumn1, Quaternion.Euler(0, 0, 90));
         Column Col = FirstCol.GetComponent<Column>();
         Col.SetnableCollisionScore(false);
 
@@ -61,7 +55,7 @@ public class ColumnsController : Singleton<ColumnsController>
     void BornSecondCol()
     {
         Vector3 NewPosChild = new Vector3(_posColumn1.x + Random.RandomRange(3f, 6f), Random.RandomRange(-5, -3f), 0);
-        GameObject newCol = ObjectPooler._instance.SpawnFromPool("Column_01", NewPosChild, Quaternion.Euler(0, 0, 90));
+        GameObject newCol = ObjectPooler._instance.SpawnFromPool("Column_0" + _idColumn, NewPosChild, Quaternion.Euler(0, 0, 90));
         newCol.transform.parent =_allColumns.transform;
     }
     public void BornNewColumn(int AmountCol)
@@ -70,7 +64,7 @@ public class ColumnsController : Singleton<ColumnsController>
         {
             Vector3 PosLastChild = _allColumns.transform.GetChild(_allColumns.transform.childCount - 1).gameObject.transform.position;
             Vector3 NewPosChild = new Vector3(PosLastChild.x + Random.RandomRange(_minDistance, 3f), Random.RandomRange(-5, -3f), 0);
-            GameObject newColumn = ObjectPooler._instance.SpawnFromPool("Column_01", NewPosChild, Quaternion.Euler(0, 0, 90));
+            GameObject newColumn = ObjectPooler._instance.SpawnFromPool("Column_0" + _idColumn, NewPosChild, Quaternion.Euler(0, 0, 90));
             newColumn.transform.parent = _allColumns.transform;
         }
       

@@ -25,12 +25,10 @@ public class CollisionDetect : MonoBehaviour
 
         if (collision.transform.CompareTag("HeaderCol"))
         {
-            Debug.Log("HeaderCol");
             HeaderCol Headercol = collision.gameObject.GetComponent<HeaderCol>();
 
             if (!Headercol.isPlayerStanding)
             {
-                Debug.Log("isPlayerStanding+false");
                 Headercol.isPlayerStanding = true;
 
                 PlayerController._instance.isPlayerMove = false;
@@ -38,8 +36,13 @@ public class CollisionDetect : MonoBehaviour
                 if (IsTouchHeaderColision)
                 {
                     IsTouchHeaderColision = false;
+                    int AmountColPass = PlayerController._instance.GetCurrentPassColumn();
 
-                    ColumnsController._instance.BornNewColumn(PlayerController._instance.GetCurrentPassColumn());
+                    ColumnsController._instance.BornNewColumn(AmountColPass);
+                    BackGroundDynamic._instance.BornNewMountain();
+                    WaweManager._instance.WaitLoadAllWawe();
+                    //BackGroundDynamic._instance.BornNewCloud(AmountColPass);
+
                     PlayerController._instance.SetCurrentScore();
                     GamePlay._instance.UpdateCurretScore();
                     SpringManager._instance.EnableSpring();

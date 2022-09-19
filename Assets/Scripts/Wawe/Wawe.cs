@@ -7,7 +7,7 @@ public class Wawe : MonoBehaviour
     [SerializeField] float _speedMove;
     [SerializeField] Vector3 _targetPos;
     [SerializeField] Vector3 _currentPos;
-
+    
     private void Start()
     {
         StartCoroutine(Undulates());
