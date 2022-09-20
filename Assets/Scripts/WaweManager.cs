@@ -47,18 +47,18 @@ public class WaweManager : Singleton<WaweManager>
             GameObject LastChild = AllWaweGr.transform.GetChild(CountChild - 1).gameObject;
             Vector3 PostLastChild = LastChild.transform.localPosition;
 
-            //if (Vector3.Distance(PosPlayer, LastChild.transform.position) < 20f)
-            //{
+            if (Vector3.Distance(PosPlayer, LastChild.transform.position) < 10f)
+            {
                 newMoutain = ObjectPooler._instance.SpawnFromPool("Wawe_"+ NumberWawe + IdBg, PostLastChild, Quaternion.Euler(0, 0, 0));
                 newMoutain.transform.parent = AllWaweGr.transform;
                 Vector3 PostNewChild = new Vector3(PostLastChild.x + Distance2Wawe, PostLastChild.y, 0);
                 newMoutain.transform.localPosition = PostNewChild;
-            //}
-            //else
-            //{
-            //    return;
-            //}
-
+                 }
+            else
+             {
+            return;
         }
+
+    }
     }
 }

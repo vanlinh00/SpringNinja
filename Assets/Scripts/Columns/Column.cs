@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class Column : MonoBehaviour
 {
-
     [SerializeField] GameObject CollisionScore;
     [SerializeField] GameObject HeaderCol;
    

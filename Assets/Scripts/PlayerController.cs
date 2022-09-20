@@ -14,7 +14,7 @@ public class PlayerController : Singleton<PlayerController>
 
     [SerializeField] Rigidbody2D _rigidbody;
     [SerializeField] float _speedY;
-    [SerializeField] float _speedX;
+    public float speedX;
     public bool isJump;
     [SerializeField] GameObject _collisionDetect;
     private int _currentScore;
@@ -24,6 +24,7 @@ public class PlayerController : Singleton<PlayerController>
     private bool _canClick;
     public bool isOnGame;
     public float currentTimeHold;
+   
 
 
     protected override void Awake()
@@ -97,9 +98,17 @@ public class PlayerController : Singleton<PlayerController>
     }
     public void Jump()
     {
-        if (_timeHold <= _timeHoldMax / 2)
+        if (_timeHold <= _timeHoldMax *1/ 4)
         {
-            _speedY = 35f;
+            _speedY = 40f;
+        }
+        else if(_timeHold <= _timeHoldMax / 2)
+        {
+            _speedY = 34f;
+        }
+        else if (_timeHold <= _timeHoldMax* 3/ 4)
+        {
+            _speedY = 30f;
         }
         else
         {
@@ -167,6 +176,26 @@ public class PlayerController : Singleton<PlayerController>
             _currentScore = _currentScore+ _countPassColumn * 2;
         }
         _countPassColumn = 0;
+    }
+    public float CalculerSpeedMove()
+    {    
+        if (currentTimeHold <= _timeHoldMax * 1 / 4f)
+        {
+            speedX = 2.3f;
+        }
+        else if (currentTimeHold <= _timeHoldMax / 2)
+        {
+            speedX = 1.75f;
+        }
+        else if (currentTimeHold <= _timeHoldMax * 3 / 4)
+        {
+            speedX = 2.2f;
+        }
+        else
+        {
+            speedX = 3.2f;
+        }
+        return speedX;
     }
 
 }

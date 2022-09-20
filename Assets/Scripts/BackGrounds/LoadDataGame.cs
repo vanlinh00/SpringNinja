@@ -16,7 +16,7 @@ public class LoadDataGame : MonoBehaviour
     int _idBg;
     void Start()
     {
-        _idBg = 1; /*Random.RandomRange(1, 4);*/
+        _idBg = Random.RandomRange(1, 4);
        _backGroundDynamicSc = _backGroundDynamic.GetComponent<BackGroundDynamic>();
         _backGroundStaticSc = _backGroundStatic.GetComponent<BackGroundStatic>();
         StartCoroutine(WaitForLoadData());
@@ -28,6 +28,7 @@ public class LoadDataGame : MonoBehaviour
         _backGroundStaticSc.IdBg = _idBg;
         _backGroundStaticSc.BornNewBackGround();
         _backGroundStaticSc.BornNewWalls();
+  
 
         //Load Wawe 
         _waweManager.IdBg = _idBg;
@@ -36,6 +37,10 @@ public class LoadDataGame : MonoBehaviour
         // Load BackGround
         _backGroundDynamicSc.idBg = _idBg;
         _backGroundDynamicSc.BornNewMountain();
+        _backGroundDynamicSc.BornNewLeaf();
+        _backGroundDynamicSc._cloudsManager.idBg = _idBg;
+         StartCoroutine(_backGroundDynamicSc._cloudsManager.WaitTimeBornNewCloud());
+
 
         //_backGroundDynamicSc.BornNewCloud(0);
 

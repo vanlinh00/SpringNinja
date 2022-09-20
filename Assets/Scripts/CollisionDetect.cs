@@ -41,7 +41,7 @@ public class CollisionDetect : MonoBehaviour
                     ColumnsController._instance.BornNewColumn(AmountColPass);
                     BackGroundDynamic._instance.BornNewMountain();
                     WaweManager._instance.WaitLoadAllWawe();
-                    //BackGroundDynamic._instance.BornNewCloud(AmountColPass);
+                    BackGroundDynamic._instance.BornNewLeaf();
 
                     PlayerController._instance.SetCurrentScore();
                     GamePlay._instance.UpdateCurretScore();

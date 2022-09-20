@@ -9,18 +9,7 @@ public class SmallWawe : MonoBehaviour
     {
         if (PlayerController._instance.isPlayerMove/*&& !IsTouchMiddleCol*/)
         {
-            if (PlayerController._instance.currentTimeHold <= (PlayerController._instance.GetTimeHoldMax() / 2f))
-            {
-                _speed = 1.5f;
-            }
-            else if (PlayerController._instance.currentTimeHold <= (PlayerController._instance.GetTimeHoldMax() * 3 / 4))
-            {
-                _speed = 2.2f;
-            }
-            else
-            {
-                _speed = 3.2f;
-            }
+            _speed = PlayerController._instance.CalculerSpeedMove();
             transform.Translate(-Vector3.right * _speed * Time.deltaTime);
         }
 

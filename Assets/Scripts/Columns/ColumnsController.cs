@@ -35,18 +35,7 @@ public class ColumnsController : Singleton<ColumnsController>
     {   
         if(PlayerController._instance.isPlayerMove/*&& !IsTouchMiddleCol*/)
         {
-            if (PlayerController._instance.currentTimeHold <= (PlayerController._instance.GetTimeHoldMax() / 2f))
-            {
-                _speed = 1.5f;
-            }
-            else if (PlayerController._instance.currentTimeHold <= (PlayerController._instance.GetTimeHoldMax() * 3 / 4))
-            {
-                _speed = 2.2f;
-            }
-            else
-            {
-                _speed = 3.2f;
-            }
+            _speed = PlayerController._instance.CalculerSpeedMove();
             transform.Translate(-Vector3.right * _speed * Time.deltaTime);
         }
        
@@ -67,6 +56,7 @@ public class ColumnsController : Singleton<ColumnsController>
             GameObject newColumn = ObjectPooler._instance.SpawnFromPool("Column_0" + _idColumn, NewPosChild, Quaternion.Euler(0, 0, 90));
             newColumn.transform.parent = _allColumns.transform;
         }
+        
       
     }
     //  -0.05999994     1.2-> 2.35
