@@ -29,7 +29,6 @@ public class LoadDataGame : MonoBehaviour
         _backGroundStaticSc.BornNewBackGround();
         _backGroundStaticSc.BornNewWalls();
   
-
         //Load Wawe 
         _waweManager.IdBg = _idBg;
         _waweManager.WaitLoadAllWawe();
@@ -38,8 +37,7 @@ public class LoadDataGame : MonoBehaviour
         _backGroundDynamicSc.idBg = _idBg;
         _backGroundDynamicSc.BornNewMountain();
         _backGroundDynamicSc.BornNewLeaf();
-        _backGroundDynamicSc._cloudsManager.idBg = _idBg;
-         StartCoroutine(_backGroundDynamicSc._cloudsManager.WaitTimeBornNewCloud());
+        _backGroundDynamicSc.GetCloudsMangaer().BornNewCloud();
 
 
         //_backGroundDynamicSc.BornNewCloud(0);

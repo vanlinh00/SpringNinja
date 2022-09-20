@@ -35,26 +35,39 @@ public class CollisionDetect : MonoBehaviour
 
                 if (IsTouchHeaderColision)
                 {
+                    this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
                     IsTouchHeaderColision = false;
                     int AmountColPass = PlayerController._instance.GetCurrentPassColumn();
 
+                    ColumnsController._instance.AddOldColumnToPool(AmountColPass);
                     ColumnsController._instance.BornNewColumn(AmountColPass);
                     BackGroundDynamic._instance.BornNewMountain();
                     WaweManager._instance.WaitLoadAllWawe();
                     BackGroundDynamic._instance.BornNewLeaf();
-
-                    PlayerController._instance.SetCurrentScore();
-                    GamePlay._instance.UpdateCurretScore();
-                    SpringManager._instance.EnableSpring();
-                    SpringManager._instance.StretchAllSpring();
-                    PlayerController._instance.ChangeVelocity(Vector3.zero);
-                    PlayerController._instance.isJump = false;
-                    this.gameObject.SetActive(false);
+                    BackGroundDynamic._instance.GetCloudsMangaer().BornNewCloud();
+                    bool IsPlayerOnEgdeColumn = Headercol.IsPlayerStandOnEgdeColumn(SpringManager._instance.springL.PosHeaderFooterLeft(), SpringManager._instance.springR.PosHeaderFooterRight());
+                    StartCoroutine(FadeTimeChangeState(IsPlayerOnEgdeColumn));
 
                 }
 
             }
         }
+    }
+    IEnumerator FadeTimeChangeState(bool IsPlayerStandOnEgdeColumn)
+    {
+        if(IsPlayerStandOnEgdeColumn)
+        {
+            PlayerController._instance.StateSweat();
+        }
+        PlayerController._instance.SetCurrentScore();
+        GamePlay._instance.UpdateCurretScore();
+        SpringManager._instance.EnableSpring();
+        SpringManager._instance.StretchAllSpring();
+        PlayerController._instance.ChangeVelocity(Vector3.zero);
+        PlayerController._instance.isJump = false;
+        yield return new WaitForSeconds(0.3f);
+        PlayerController._instance.StateIdle();
+        this.gameObject.SetActive(false);
     }
 
 }

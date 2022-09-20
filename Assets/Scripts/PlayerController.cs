@@ -14,8 +14,10 @@ public class PlayerController : Singleton<PlayerController>
 
     [SerializeField] Rigidbody2D _rigidbody;
     [SerializeField] float _speedY;
+
     public float speedX;
     public bool isJump;
+
     [SerializeField] GameObject _collisionDetect;
     private int _currentScore;
     [SerializeField] int _countPassColumn;
@@ -24,9 +26,10 @@ public class PlayerController : Singleton<PlayerController>
     private bool _canClick;
     public bool isOnGame;
     public float currentTimeHold;
+
+    [SerializeField] Animator _animator;
+    [SerializeField] GameObject _bodyNinja;
    
-
-
     protected override void Awake()
     {
         base.Awake();
@@ -40,6 +43,27 @@ public class PlayerController : Singleton<PlayerController>
         isJump = false;
         _timeHold = 0f;
         _rigidbody = GetComponent<Rigidbody2D>();
+        StateIdle();
+    }
+    public void StateIdle()
+    {
+        _animator.SetBool("sweat", false);
+        _animator.SetBool("jumb", false);
+        _animator.SetBool("shrug", false);
+    }
+    public void StateJumb()
+    {
+        _animator.SetBool("jumb", true);
+    }
+    public void StateSweat()
+    {
+        _animator.SetBool("jumb", true);
+        _animator.SetBool("sweat", true);
+    }
+    public void StateShrung()
+    {
+        _animator.SetBool("shrug", true);
+        _animator.SetBool("jumb", false);
     }
 
     void Update()
@@ -50,13 +74,13 @@ public class PlayerController : Singleton<PlayerController>
         {
             return;
         }
-        if (isOnGame)
+        if (isOnGame&&ColumnsController._instance.isColumnsReady)
         {
             if (Input.GetMouseButton(0) && !isJump && _timeHold <= _timeHoldMax)
             {
                 _timeHold = _timeHold + Time.deltaTime;
                 _springManager.SqueezeAllSpring();
-               
+                StateShrung();
                 MoveHeroToHeaderSpring();
             }
             if (Input.GetMouseButtonUp(0))
@@ -114,12 +138,13 @@ public class PlayerController : Singleton<PlayerController>
         {
             _speedY = 26f;
         }
-
+        StateJumb();
         isPlayerMove = true;
         currentTimeHold = _timeHold;
         isJump = true;
         _collisionDetect.SetActive(true);
-        _rigidbody.AddForce(new Vector2(0/*3*/, _timeHold * _speedY / _timeHoldMax), ForceMode2D.Impulse);
+        _collisionDetect.GetComponent<BoxCollider2D>().enabled = true;
+        _rigidbody.AddForce(new Vector2(0, _timeHold * _speedY / _timeHoldMax), ForceMode2D.Impulse);
         SpringManager._instance.ResetScale();
         SpringManager._instance.MoveToHeader();
         _collisionDetect.transform.position = new Vector3(_ninja.transform.position.x, _ninja.transform.position.y - 0.0259576f, 0);
@@ -197,5 +222,10 @@ public class PlayerController : Singleton<PlayerController>
         }
         return speedX;
     }
-
+    public Vector3 PosHeaderHero()
+    {  
+        float PosY = (_bodyNinja.GetComponent<SpriteRenderer>().size.y * _bodyNinja.transform.lossyScale.y)/2+_bodyNinja.transform.position.y+0.1f;
+        return new Vector3 (_bodyNinja.transform.position.x, PosY,0);
+    }
 }
+  

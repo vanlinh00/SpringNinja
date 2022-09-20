@@ -10,17 +10,17 @@ public class BackGroundDynamic : Singleton<BackGroundDynamic>
     [SerializeField] GameObject _notice;
     [SerializeField] float _speedMove;
 
-    public CloudsManager _cloudsManager;
+    [SerializeField] CloudsManager _cloudsManager;
     public int idBg=1;
-
+    float _timeBornCloud = 0;
     protected override void Awake()
     {
         base.Awake();
         
     }
-
     void Update()
     {
+        _timeBornCloud += Time.deltaTime;
         if (PlayerController._instance.isPlayerMove)
         {
             _allClouds.transform.Translate(-Vector3.right * _speedMove  * Time.deltaTime);
@@ -28,46 +28,19 @@ public class BackGroundDynamic : Singleton<BackGroundDynamic>
             _allmountains.transform.Translate(-Vector3.right * _speedMove/2 * Time.deltaTime);
             _allLeafs.transform.Translate(-Vector3.right * _speedMove/3 * Time.deltaTime);
         }
+        else
+        {
+            _allClouds.transform.Translate(-Vector3.right * _speedMove/10 * Time.deltaTime);
+            if(_timeBornCloud>20f)
+            {
+                _cloudsManager.BornNewCloud();
+                _timeBornCloud = 0f;
+            }
+        }
            
     }
-  //public void AutoBornCloud()
-  //  {
-
-  //  }
-  //public IEnumerator WaitTimeBonrNewCloud()
-  //  {
-  //      while(!PlayerController._instance.isPlayerMove)
-  //      {
-  //          BornNewCloud();
-  //          yield return new WaitForSeconds(40f);
-  //      }
-  //  }
-
-  //public void BornNewCloud()
-  //  {
-  //      GameObject newCloud = null;
-  //      Vector3 PosLastChildCount;
-  //      int CountChild = _allClouds.transform.childCount;
-
-  //      if (CountChild == 0)
-  //      {
-  //          PosLastChildCount = new Vector3(0, 0, 0);
-  //      }
-  //      else
-  //      {
-
-  //          PosLastChildCount= _allClouds.transform.GetChild(CountChild-1).transform.localPosition;
-  //      }
-  //       for (int i = 0; i < 2; i++)
-  //          {
-  //              float posY = Random.RandomRange(0, -2.25f);
-  //              Vector3 NewPosChild = new Vector3(0, 0, 0);
-  //              newCloud = ObjectPooler._instance.SpawnFromPool("Cloud_0" + idBg, NewPosChild, Quaternion.Euler(0, 0, 0));
-  //              newCloud.transform.parent = _allClouds.transform;
-  //              newCloud.transform.localPosition = new Vector3(i * 2.45f + PosLastChildCount.x, posY, 0);
-  //          }
-  //  }
-  public void BornNewMountain()
+ 
+    public void BornNewMountain()
     {
         GameObject newMoutain = null;
         int CountChild = _allmountains.transform.childCount;
@@ -94,11 +67,8 @@ public class BackGroundDynamic : Singleton<BackGroundDynamic>
 
                 if(CountChild>4)
                 {
-                    GameObject FirstChild = _allmountains.transform.GetChild(0).gameObject;
-                    ObjectPooler._instance.AddElement("Mountain_0" + idBg, FirstChild);
-                    FirstChild.transform.parent = ObjectPooler._instance.gameObject.transform;
+                    AddMountainToPool();
                 }
- 
             }
             else
             {
@@ -106,6 +76,12 @@ public class BackGroundDynamic : Singleton<BackGroundDynamic>
             }
 
         }
+    }
+    public void AddMountainToPool()
+    {
+        GameObject FirstChild = _allmountains.transform.GetChild(0).gameObject;
+        ObjectPooler._instance.AddElement("Mountain_0" + idBg, FirstChild);
+        FirstChild.transform.parent = ObjectPooler._instance.gameObject.transform;
     }
     public void BornNewLeaf()
     {
@@ -124,17 +100,26 @@ public class BackGroundDynamic : Singleton<BackGroundDynamic>
             Vector3 PostLastChild = LastChild.transform.localPosition;
             newLeaf = ObjectPooler._instance.SpawnFromPool("Leaf_0" + idBg, PostLastChild, Quaternion.Euler(0, 0, 0));
             newLeaf.transform.parent = _allLeafs.transform;
-            Vector3 PostNewChild = new Vector3(PostLastChild.x+ Random.RandomRange(5f,6f), PostLastChild.y, 0);
+            Vector3 PostNewChild = new Vector3(PostLastChild.x+ Random.RandomRange(4f,6f), PostLastChild.y, 0);
             newLeaf.transform.localPosition = PostNewChild;
 
             if(CountChild>4)
             {
-                GameObject FirstChild = _allLeafs.transform.GetChild(0).gameObject;
-                ObjectPooler._instance.AddElement("Leaf_0" + idBg, FirstChild);
-                FirstChild.transform.parent = ObjectPooler._instance.gameObject.transform;
+                AddLeafToPool();
             }
 
         }
+    }
+    void AddLeafToPool()
+    {
+        GameObject FirstChild = _allLeafs.transform.GetChild(0).gameObject;
+        ObjectPooler._instance.AddElement("Leaf_0" + idBg, FirstChild);
+        FirstChild.transform.parent = ObjectPooler._instance.gameObject.transform;
+    }
+    public CloudsManager GetCloudsMangaer()
+    {
+        _cloudsManager.idBg = idBg;
+        return _cloudsManager;
     }
 
 

@@ -53,12 +53,17 @@ public class WaweManager : Singleton<WaweManager>
                 newMoutain.transform.parent = AllWaweGr.transform;
                 Vector3 PostNewChild = new Vector3(PostLastChild.x + Distance2Wawe, PostLastChild.y, 0);
                 newMoutain.transform.localPosition = PostNewChild;
-                 }
+
+                GameObject OldWawe = AllWaweGr.transform.GetChild(0).gameObject;
+                ObjectPooler._instance.AddElement("Wawe_" + NumberWawe + IdBg, OldWawe);
+                OldWawe.transform.parent = ObjectPooler._instance.transform;
+             }
             else
              {
             return;
-        }
+              }
 
+        }
     }
-    }
+
 }

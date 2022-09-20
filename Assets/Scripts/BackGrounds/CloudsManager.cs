@@ -4,43 +4,60 @@ using UnityEngine;
 
 public class CloudsManager : MonoBehaviour
 {
- [SerializeField] Vector3 PosTarget;
- [SerializeField] Vector3 PosStart;
- public int idBg;
- GameObject _newCloud;
-    public IEnumerator WaitTimeBornNewCloud()
+   public int idBg;
+   
+    public void BornNewCloud()
     {
-        BornNewCloud();
-        while(true)
-        {
-            BornNewCloud();
-            StartCoroutine(Move(_newCloud.transform, PosTarget, 20f));
-            yield return new WaitForSeconds(20f);
-        }
-    }
-  public  void BornNewCloud()
-    {
-        _newCloud = ObjectPooler._instance.SpawnFromPool("Cloud_0" + idBg, PosStart, Quaternion.Euler(0, 0, 0));
-        if(transform.childCount>3)
-        {
-           GameObject FirstCloud = transform.GetChild(0).gameObject;
-           ObjectPooler._instance.AddElement("Cloud_0" + idBg, FirstCloud);
-           FirstCloud.transform.parent = ObjectPooler._instance.transform;
+        AddCloudToPooler();
 
+        Vector3 PosLastChild;
+
+        int CountChild = transform.childCount;
+
+        if (CountChild == 0)
+        {
+            PosLastChild = new Vector3(-1.73f, 4.28f, 0);
         }
+        else
+        {
+            PosLastChild = transform.GetChild(transform.childCount - 1).gameObject.transform.position;
+        }
+        if(CountChild<9)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                if (transform.childCount != 0)
+                {
+                    PosLastChild = transform.GetChild(transform.childCount - 1).gameObject.transform.position;
+                }
+
+                Vector3 NewPosChild = new Vector3(PosLastChild.x + Random.RandomRange(2.2f, 3f), Random.RandomRange(2f, 4.28f), 0);
+                GameObject newCloud = ObjectPooler._instance.SpawnFromPool("Cloud_0" + idBg, NewPosChild, Quaternion.Euler(0, 0, 0));
+                newCloud.transform.parent = transform;
+                float NewScale = Random.RandomRange(0.25f, 0.5f);
+                newCloud.transform.localScale = new Vector3(NewScale, NewScale, NewScale);
+            }
+        }
+
+    }
+    public void AddCloudToPooler()
+    {
+        List<GameObject> ListClouds = new List<GameObject>();
+        if (transform.childCount >= 18)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                GameObject OldCloud = transform.GetChild(i).gameObject;
+                OldCloud.SetActive(false);
+                ObjectPooler._instance.AddElement("Cloud_0" + idBg, transform.GetChild(i).gameObject);
+                ListClouds.Add(OldCloud);
+            }
+            for(int i=0;i<3;i++)
+            {
+                ListClouds[i].transform.parent = ObjectPooler._instance.transform;
+            }
+        }
+
     }
 
-    IEnumerator Move(Transform CurrentTransform, Vector3 Target, float TotalTime)
-    {
-        var passed = 0f;
-        var init = CurrentTransform.transform.position;
-        while (passed < TotalTime)
-        {
-            passed += Time.deltaTime;
-            var normalized = passed / TotalTime;
-            var current = Vector3.Lerp(init, Target, normalized);
-            CurrentTransform.position = current;
-            yield return null;
-        }
-    }
 }

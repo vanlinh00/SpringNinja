@@ -74,5 +74,13 @@ public class Spring : MonoBehaviour
     {
         return _footer;
     }
-
+    public Vector3 PosHeaderFooterRight()
+    {
+        Debug.Log(new Vector3(_footer.transform.position.x + 0.09124574397f, _footer.transform.position.y, 0));
+        return new Vector3(_footer.transform.position.x+ 0.09124574397f, _footer.transform.position.y, 0);
+    }
+    public Vector3 PosHeaderFooterLeft()
+    {
+        return new Vector3(_footer.transform.position.x - 0.09124574397f, _footer.transform.position.y, 0);
+    }
 }

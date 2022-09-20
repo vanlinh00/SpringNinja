@@ -12,16 +12,17 @@ public class ColumnsController : Singleton<ColumnsController>
 
     public bool IsTouchMiddleCol = false;
     public int _idColumn;
+    GameObject _firstCol;
+    public bool isColumnsReady = false;
    public IEnumerator WaitLoadColumns()
     {
         yield return new WaitForEndOfFrame();
-        GameObject FirstCol = ObjectPooler._instance.SpawnFromPool("Column_0"+ _idColumn, _posColumn1, Quaternion.Euler(0, 0, 90));
-        Column Col = FirstCol.GetComponent<Column>();
+        _firstCol = ObjectPooler._instance.SpawnFromPool("Column_0"+ _idColumn, _posColumn1, Quaternion.Euler(0, 0, 90));
+        Column Col = _firstCol.GetComponent<Column>();
         Col.SetnableCollisionScore(false);
 
         yield return new WaitForSeconds(0.01f);
         Col.GetHeaderCol().GetComponent<HeaderCol>().isPlayerStanding = true;
-        FirstCol.transform.parent = transform;
         BornSecondCol();
         BornNewColumn(5); 
     }
@@ -40,7 +41,6 @@ public class ColumnsController : Singleton<ColumnsController>
         }
        
     }
-
     void BornSecondCol()
     {
         Vector3 NewPosChild = new Vector3(_posColumn1.x + Random.RandomRange(3f, 6f), Random.RandomRange(-5, -3f), 0);
@@ -56,8 +56,23 @@ public class ColumnsController : Singleton<ColumnsController>
             GameObject newColumn = ObjectPooler._instance.SpawnFromPool("Column_0" + _idColumn, NewPosChild, Quaternion.Euler(0, 0, 90));
             newColumn.transform.parent = _allColumns.transform;
         }
-        
-      
+       
+    }
+    public void AddOldColumnToPool(int AmountCol)
+    {
+        List<GameObject> AllColumnPass = new List<GameObject>();
+        for(int i=0;i<AmountCol;i++)
+        {
+            GameObject OldCol = _allColumns.transform.GetChild(i).gameObject;
+            OldCol.GetComponent<Column>().ResetColumn();
+            OldCol.SetActive(false);
+            AllColumnPass.Add(OldCol);
+            ObjectPooler._instance.AddElement("Column_0" + _idColumn, OldCol);
+        }
+        for(int i=0;i<AllColumnPass.Count;i++)
+        {
+            AllColumnPass[i].transform.parent = ObjectPooler._instance.transform;
+        }
     }
     //  -0.05999994     1.2-> 2.35
     // x ?  x+ 2.22313  + -0.06 =2.35
@@ -74,7 +89,11 @@ public class ColumnsController : Singleton<ColumnsController>
     IEnumerator WaitTimeMoveTarget()
     {
         yield return new WaitForSeconds(0.1f);
-        StartCoroutine(Move(_allColumns.transform, newPosAllColumns(), 0.5f));
+        StartCoroutine(Move(_allColumns.transform, newPosAllColumns(), 0.25f));
+        yield return new WaitForSeconds(0.25f);
+        _firstCol.transform.parent = _allColumns.transform;
+        _firstCol.transform.SetSiblingIndex(0);
+        isColumnsReady = true;
     }
 
     IEnumerator Move(Transform CurrentTransform, Vector3 Target, float TotalTime)
@@ -89,8 +108,6 @@ public class ColumnsController : Singleton<ColumnsController>
             CurrentTransform.position = current;
             yield return null;
         }
+  
     }
-
-
-
 }

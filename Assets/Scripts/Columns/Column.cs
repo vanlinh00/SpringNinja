@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class Column : MonoBehaviour
 {
-    [SerializeField] GameObject CollisionScore;
-    [SerializeField] GameObject HeaderCol;
+    [SerializeField] GameObject _collisionScore;
+    [SerializeField] GameObject _headerCol;
    
     public Vector3 PosHeader()
     {
@@ -13,15 +13,21 @@ public class Column : MonoBehaviour
     }
     public void SetnableHaderCol(bool value)
     {
-        HeaderCol.SetActive(value);
+        _headerCol.SetActive(value);
     }
     public void SetnableCollisionScore(bool value)
     {
-        CollisionScore.SetActive(value);
+        _collisionScore.SetActive(value);
     }
     public GameObject GetHeaderCol()
     {
-        return HeaderCol;
+        return _headerCol;
+    }
+    public void ResetColumn()
+    {
+        _collisionScore.SetActive(true);
+        _headerCol.GetComponent<HeaderCol>().isPlayerStanding = false;
+
     }
 
 }
