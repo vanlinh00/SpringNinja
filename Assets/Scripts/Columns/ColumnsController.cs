@@ -20,7 +20,6 @@ public class ColumnsController : Singleton<ColumnsController>
         _firstCol = ObjectPooler._instance.SpawnFromPool("Column_0"+ _idColumn, _posColumn1, Quaternion.Euler(0, 0, 90));
         Column Col = _firstCol.GetComponent<Column>();
         Col.SetnableCollisionScore(false);
-
         yield return new WaitForSeconds(0.01f);
         Col.GetHeaderCol().GetComponent<HeaderCol>().isPlayerStanding = true;
         BornSecondCol();
@@ -53,10 +52,18 @@ public class ColumnsController : Singleton<ColumnsController>
         {
             Vector3 PosLastChild = _allColumns.transform.GetChild(_allColumns.transform.childCount - 1).gameObject.transform.position;
             Vector3 NewPosChild = new Vector3(PosLastChild.x + Random.RandomRange(_minDistance, 3f), Random.RandomRange(-5, -3f), 0);
-            GameObject newColumn = ObjectPooler._instance.SpawnFromPool("Column_0" + _idColumn, NewPosChild, Quaternion.Euler(0, 0, 90));
-            newColumn.transform.parent = _allColumns.transform;
+            GameObject NewColumn = ObjectPooler._instance.SpawnFromPool("Column_0" + _idColumn, NewPosChild, Quaternion.Euler(0, 0, 90));
+            NewColumn.transform.parent = _allColumns.transform;
+
+            // Born new Bird on the columns
+            if(Random.RandomRange(1,3)==1)
+            {
+                Vector3 PosHeaderCol = NewColumn.GetComponent<Column>().PosHeader();
+                Vector3 PosBird = new Vector3(PosHeaderCol.x, PosHeaderCol.y + 0.1f, 0f);
+                GameObject NewBird = BirdManager._instance.MoveBirdOnColumns(PosBird);
+                NewBird.transform.parent = NewColumn.transform;
+            }
         }
-       
     }
     public void AddOldColumnToPool(int AmountCol)
     {
@@ -95,7 +102,6 @@ public class ColumnsController : Singleton<ColumnsController>
         _firstCol.transform.SetSiblingIndex(0);
         isColumnsReady = true;
     }
-
     IEnumerator Move(Transform CurrentTransform, Vector3 Target, float TotalTime)
     {
         var passed = 0f;

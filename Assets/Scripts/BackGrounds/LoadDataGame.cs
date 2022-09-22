@@ -17,15 +17,16 @@ public class LoadDataGame : MonoBehaviour
     void Start()
     {
         _idBg = Random.RandomRange(1, 4);
-       _backGroundDynamicSc = _backGroundDynamic.GetComponent<BackGroundDynamic>();
+        _backGroundDynamicSc = _backGroundDynamic.GetComponent<BackGroundDynamic>();
         _backGroundStaticSc = _backGroundStatic.GetComponent<BackGroundStatic>();
         StartCoroutine(WaitForLoadData());
     }
     IEnumerator WaitForLoadData()
     {
         yield return new WaitForEndOfFrame();
+
         //Load BackGround Static
-        _backGroundStaticSc.IdBg = _idBg;
+        _backGroundStaticSc.idBg = _idBg;
         _backGroundStaticSc.BornNewBackGround();
         _backGroundStaticSc.BornNewWalls();
   
@@ -38,9 +39,6 @@ public class LoadDataGame : MonoBehaviour
         _backGroundDynamicSc.BornNewMountain();
         _backGroundDynamicSc.BornNewLeaf();
         _backGroundDynamicSc.GetCloudsMangaer().BornNewCloud();
-
-
-        //_backGroundDynamicSc.BornNewCloud(0);
 
         // load columns 
         _columnsController._idColumn = _idBg;

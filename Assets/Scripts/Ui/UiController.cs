@@ -15,34 +15,66 @@ public class UiController : Singleton<UiController>
     }
     private void Start()
     {
-        InforPlayer inforPlayer = DataPlayer.getInforPlayer();
-
-        if (inforPlayer.idLoadGameAgain)
+        InforPlayer inforPlayer = DataPlayer.GetInforPlayer();
+        if (inforPlayer.isLoadGameAgain)
         {
-            DataPlayer.UpdataLoadGameAgain(false);
-            CamearaController._instance.SetCameraGamePlay();
-            EnableGamePlay();
+            StartCoroutine(WaitLoadGameAgain());
+            LoadGameAgain();
+           // EnableGamePlay();
         }
         else
         {
             EnableGameHome();
         }
     }
+    void LoadGameAgain()
+    {
+        CamearaController._instance.SetCameraGamePlay();
+        int StateAudio;
+        if (DataPlayer.GetInforPlayer().isOnAudio)
+        {
+            StateAudio = 1;
+        }
+        else
+        {
+            StateAudio = 2;
+        }
+        AudioManager._instance.ChangeStateAudio(StateAudio);
+        PlayerController._instance.isOnGame = true;
+        ColumnsController._instance.MoveAllColumnToTarget();
+        _gameHome.SetActive(false);
+        _gamePlay.SetActive(true);
+        _gamePlay.GetComponent<GamePlay>().In();
+        _gameOverPanel.SetActive(false);
+    }
+    IEnumerator WaitLoadGameAgain()
+    {
+        yield return new WaitForSeconds(0.2f);
+        DataPlayer.UpdataLoadGameAgain(false);
+    }
 
     public void EnableGameHome()
     {
         _gameHome.SetActive(true);
+        _gameHome.GetComponent<GameHome>().In();
         _gameOverPanel.SetActive(false);
         _gamePlay.SetActive(false);
     }
-
     public void EnableGamePlay()
     {
         PlayerController._instance.isOnGame = true;
         ColumnsController._instance.MoveAllColumnToTarget();
-        _gameHome.SetActive(false);
+        StartCoroutine(FadeEnableGamePlay());
         _gameOverPanel.SetActive(false);
+     
+    }
+    IEnumerator FadeEnableGamePlay()
+    {
+        _gameHome.GetComponent<GameHome>().Out();
+        yield return new WaitForSeconds(0.2f);
+        _gameHome.SetActive(false);
         _gamePlay.SetActive(true);
+        _gamePlay.GetComponent<GamePlay>().In();     
     }
 
     public void EnableGameOver()

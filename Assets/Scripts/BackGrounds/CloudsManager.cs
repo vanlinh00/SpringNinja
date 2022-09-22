@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CloudsManager : MonoBehaviour
 {
-   public int idBg;
+    public int idBg;
    
     public void BornNewCloud()
     {

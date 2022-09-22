@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class CollisionDetect : MonoBehaviour
 {
-    public bool IsTouchHeaderColision;
+    public bool isTouchHeaderColision;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("HeaderColDetect"))
         {
-            IsTouchHeaderColision = true;
+            isTouchHeaderColision = true;
         }
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("HeaderColDetect"))
         {
-            IsTouchHeaderColision = false;
+            isTouchHeaderColision = false;
         }
     }
     private void OnCollisionEnter2D(Collision2D collision)
@@ -33,14 +33,18 @@ public class CollisionDetect : MonoBehaviour
 
                 PlayerController._instance.isPlayerMove = false;
 
-                if (IsTouchHeaderColision)
+                if (isTouchHeaderColision)
                 {
+
+                    SoundController._instance.OnPlayAudio(SoundType.land);
                     this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
-                    IsTouchHeaderColision = false;
+                    isTouchHeaderColision = false;
                     int AmountColPass = PlayerController._instance.GetCurrentPassColumn();
 
                     ColumnsController._instance.AddOldColumnToPool(AmountColPass);
                     ColumnsController._instance.BornNewColumn(AmountColPass);
+                    OnEnbleAddScoreTxt(AmountColPass);
+
                     BackGroundDynamic._instance.BornNewMountain();
                     WaweManager._instance.WaitLoadAllWawe();
                     BackGroundDynamic._instance.BornNewLeaf();
@@ -64,10 +68,18 @@ public class CollisionDetect : MonoBehaviour
         SpringManager._instance.EnableSpring();
         SpringManager._instance.StretchAllSpring();
         PlayerController._instance.ChangeVelocity(Vector3.zero);
-        PlayerController._instance.isJump = false;
         yield return new WaitForSeconds(0.3f);
         PlayerController._instance.StateIdle();
+        PlayerController._instance.isJump = false;
+        yield return new WaitForSeconds(0.2f);
         this.gameObject.SetActive(false);
     }
-
+   void OnEnbleAddScoreTxt(int AmountColPass)
+    {
+        if(AmountColPass>=2)
+        {
+            StartCoroutine(GamePlay._instance.WaitTimeDisableAddScoreTxt(AmountColPass*2));
+        }
+    }
+  
 }

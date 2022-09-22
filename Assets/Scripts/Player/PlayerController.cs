@@ -29,7 +29,10 @@ public class PlayerController : Singleton<PlayerController>
 
     [SerializeField] Animator _animator;
     [SerializeField] GameObject _bodyNinja;
-   
+    float _timeChangeState = 0f;
+    bool _isChangeState = false;
+    private bool _isSpringSqueeze=false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -51,7 +54,7 @@ public class PlayerController : Singleton<PlayerController>
         _animator.SetBool("jumb", false);
         _animator.SetBool("shrug", false);
     }
-    public void StateJumb()
+    public void StateJump()
     {
         _animator.SetBool("jumb", true);
     }
@@ -62,10 +65,24 @@ public class PlayerController : Singleton<PlayerController>
     }
     public void StateShrung()
     {
-        _animator.SetBool("shrug", true);
         _animator.SetBool("jumb", false);
-    }
+        _animator.SetBool("closeEyes", false);
+        _animator.SetBool("rotaHand", false);
+        _animator.SetBool("shrug", true);
 
+    }
+    public void StateCloseEyes()
+    {
+        _animator.SetBool("jumb", false);
+        _animator.SetBool("rotaHand", false);
+        _animator.SetBool("closeEyes", true);
+    }
+    public void StateRotaHand()
+    {
+        _animator.SetBool("jumb", false);
+        _animator.SetBool("closeEyes", false);
+        _animator.SetBool("rotaHand", true);
+    }
     void Update()
     {
         CheckCanClick();
@@ -78,17 +95,55 @@ public class PlayerController : Singleton<PlayerController>
         {
             if (Input.GetMouseButton(0) && !isJump && _timeHold <= _timeHoldMax)
             {
+                GamePlay._instance.DisableTutorial();
+                if (!_isSpringSqueeze)
+                {
+                    EnableSoundCompressing();
+                    _isSpringSqueeze = true;  
+                }
                 _timeHold = _timeHold + Time.deltaTime;
                 _springManager.SqueezeAllSpring();
                 StateShrung();
                 MoveHeroToHeaderSpring();
             }
-            if (Input.GetMouseButtonUp(0))
+            else
             {
+                if(_timeHold>= _timeHoldMax)
+                {
+                    SoundController._instance.audioFx.loop = false;
+                }
+            }
+            if (Input.GetMouseButtonUp(0)&& _isSpringSqueeze)
+            {
+                _isSpringSqueeze = false;
+                SoundController._instance.audioFx.loop = false;
+                SoundController._instance.OnPlayAudio(SoundType.jump);
                 Jump();
             }
         }
-    
+        else
+        {
+            _timeChangeState += Time.deltaTime;
+            if (_timeChangeState > 4f&& !_isChangeState)
+            {
+                _timeChangeState = 0f;
+                _isChangeState = true;
+                StartCoroutine(WaitTimeRotaHand());
+            }
+         
+        }
+
+    }
+    IEnumerator WaitTimeRotaHand()
+    {
+        StateRotaHand();
+        yield return new WaitForSeconds(1.25f);
+        StateIdle();
+        yield return new WaitForSeconds(0.2f);
+        StateCloseEyes();
+        yield return new WaitForSeconds(0.2f);
+        StateIdle();
+        _isChangeState = false;
     }
     void CheckCanClick()
     {
@@ -103,7 +158,6 @@ public class PlayerController : Singleton<PlayerController>
                 _canClick = true;
             }
         }
-
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             if (EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId))
@@ -116,7 +170,7 @@ public class PlayerController : Singleton<PlayerController>
             }
         }
     }
-    public  void MoveHeroToHeaderSpring()
+    public void MoveHeroToHeaderSpring()
     {
         _ninja.transform.position = new Vector3(_ninja.transform.position.x, _springManager.springL.GetPosHeader().y,0);
     }
@@ -138,7 +192,7 @@ public class PlayerController : Singleton<PlayerController>
         {
             _speedY = 26f;
         }
-        StateJumb();
+        StateJump();
         isPlayerMove = true;
         currentTimeHold = _timeHold;
         isJump = true;
@@ -156,15 +210,16 @@ public class PlayerController : Singleton<PlayerController>
         if (collision.gameObject.CompareTag("Walls"))
          {
             isPlayerMove = false;
+            SoundController._instance.OnPlayAudio(SoundType.fall);
             UiController._instance.EnableGameOver();
         }
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("MiddleCol"))
-        {
-            gameObject.GetComponent<BoxCollider2D>().enabled = false;
-        }
+        //if (collision.gameObject.CompareTag("MiddleCol"))
+        //{
+        //    gameObject.GetComponent<BoxCollider2D>().enabled = false;
+        //}
     }
     public void ChangeVelocity(Vector3 VectorChange)
     {
@@ -224,8 +279,13 @@ public class PlayerController : Singleton<PlayerController>
     }
     public Vector3 PosHeaderHero()
     {  
-        float PosY = (_bodyNinja.GetComponent<SpriteRenderer>().size.y * _bodyNinja.transform.lossyScale.y)/2+_bodyNinja.transform.position.y+0.1f;
+        float PosY = (_bodyNinja.GetComponent<SpriteRenderer>().size.y * _bodyNinja.transform.lossyScale.y)/2+_bodyNinja.transform.position.y+0.08f;
         return new Vector3 (_bodyNinja.transform.position.x, PosY,0);
+    }
+    public void EnableSoundCompressing()
+    {
+        SoundController._instance.OnPlayAudio(SoundType.compressing);
+        SoundController._instance.audioFx.loop = true;
     }
 }
   

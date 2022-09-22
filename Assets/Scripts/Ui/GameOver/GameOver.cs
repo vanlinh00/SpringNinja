@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-
 public class GameOver : Singleton<GameOver>
 {
     [SerializeField] Button _restartBtn;
@@ -17,12 +16,14 @@ public class GameOver : Singleton<GameOver>
     }
     void RestartGame()
     {
+        SoundController._instance.OnPlayAudio(SoundType.button);
         DataPlayer.UpdataLoadGameAgain(true);
-        SceneManager.LoadScene(0);
+        StartCoroutine(Out());
     }
     void GoHomeUi()
     {
-        SceneManager.LoadScene(0);
+        SoundController._instance.OnPlayAudio(SoundType.button);
+        StartCoroutine(Out());
     }
     public void In()
     {
@@ -31,11 +32,32 @@ public class GameOver : Singleton<GameOver>
     IEnumerator FadeIn()
     {
         float t = 0;
+      
         while (_canvasGroup.alpha < 1)
         {
             yield return new WaitForEndOfFrame();
             _canvasGroup.alpha = t;
             t += Time.deltaTime * 1.7f;
         }
+        
+    }
+    IEnumerator Out()
+    {
+        StartCoroutine(FadeOut());
+        yield return new WaitForSeconds(0.3f);
+        SceneManager.LoadScene(0);
+        //yield return new WaitForSeconds(0.5655f);
+ 
+    }
+    IEnumerator FadeOut()
+    {
+        float t = 1;
+        while (_canvasGroup.alpha >=0)
+        {
+            yield return new WaitForEndOfFrame();
+            _canvasGroup.alpha = t;
+            t -= Time.deltaTime * 1.7f;
+        }
+      
     }
 }

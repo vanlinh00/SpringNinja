@@ -4,53 +4,45 @@ using UnityEngine;
 
 public class Spring : MonoBehaviour
 {
-
     private float _minScale = 0.01522093f;      
     private float _maxScale = 0.4862621f;      
-    [SerializeField] float _speed = 1f;
+    [SerializeField] float _speedCompress = 1f;
 
     [SerializeField] GameObject _header;
     [SerializeField] GameObject _middle;
     [SerializeField] GameObject _footer;
 
-    public bool isStretch;
+    public bool isCompress;
     public void Start()
     {
-        isStretch = false;
+        isCompress = false;
     }
     private void FixedUpdate()
     {
-        if (isStretch)
+        if (isCompress)
         {
             StretchSpring();
             PlayerController._instance.MoveHeroToHeaderSpring();
         }
     }
-
-   // float a = 0;
     public void SqueezeSpring()
     {
         if(_middle.transform.lossyScale.x> _minScale)
         {
-            //a =a+ Time.deltaTime;
-            _middle.transform.localScale = new Vector3(_middle.transform.lossyScale.x - Time.deltaTime / _speed, _middle.transform.lossyScale.y, 0);
+            _middle.transform.localScale = new Vector3(_middle.transform.lossyScale.x - Time.deltaTime / _speedCompress, _middle.transform.lossyScale.y, 0);
             _header.transform.position = new Vector3(_header.transform.position.x, _middle.transform.position.y + _middle.transform.lossyScale.x * 0.7399999f, 0);
         }
-        //else
-        //{
-        //    Debug.Log(a);
-        //}
     }
     public void StretchSpring()
     {
         if (_middle.transform.lossyScale.x < _maxScale)
         {
-            _middle.transform.localScale = new Vector3(_middle.transform.lossyScale.x + 2f* Time.deltaTime / _speed, _middle.transform.lossyScale.y, 0);
+            _middle.transform.localScale = new Vector3(_middle.transform.lossyScale.x + 2f* Time.deltaTime / _speedCompress, _middle.transform.lossyScale.y, 0);
             _header.transform.position = new Vector3(_header.transform.position.x, _middle.transform.position.y + _middle.transform.lossyScale.x * 0.7399999f, 0);
         }
         else
         {
-            isStretch = false;
+            isCompress = false;
         }
     }    
     public void ResetScale()
@@ -76,7 +68,6 @@ public class Spring : MonoBehaviour
     }
     public Vector3 PosHeaderFooterRight()
     {
-        Debug.Log(new Vector3(_footer.transform.position.x + 0.09124574397f, _footer.transform.position.y, 0));
         return new Vector3(_footer.transform.position.x+ 0.09124574397f, _footer.transform.position.y, 0);
     }
     public Vector3 PosHeaderFooterLeft()

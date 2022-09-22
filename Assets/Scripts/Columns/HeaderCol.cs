@@ -17,9 +17,8 @@ public class HeaderCol : MonoBehaviour
     {
         return new Vector3(transform.parent.position.x + 0.24304706363f, transform.parent.position.y + 3.310000317f,0);
     }
-   public bool IsPlayerStandOnEgdeColumn(Vector3 SpringLeft, Vector3 SpringRight)
+   public bool IsPlayerStandOnEgdeColumn(Vector3 PosSpringLeft, Vector3 PosSpringRight)
     {
-        Debug.Log(GetPosLeft());
-        return (Vector3.Distance(SpringRight, GetPosLeft()) <= 0.15 || (Vector3.Distance(SpringLeft, GetPosRight()) <= 0.15f) )? true : false;
+        return (Vector3.Distance(PosSpringRight, GetPosLeft()) <= 0.15 || (Vector3.Distance(PosSpringLeft, GetPosRight()) <= 0.15f) )? true : false;
     }
 }

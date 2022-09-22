@@ -9,14 +9,13 @@ public class DataPlayer
     static DataPlayer()
     {
         inforPlayer = JsonUtility.FromJson<InforPlayer>(PlayerPrefs.GetString(ALL_DATA));
-
         if (inforPlayer == null)
         {
             inforPlayer = new InforPlayer
             {
-                idLoadGameAgain = false,
+                isLoadGameAgain = false,
                 bestScore = 0,
- 
+                isOnAudio = true,
             };
             SaveData();
         }
@@ -28,24 +27,27 @@ public class DataPlayer
     }
     public static void UpdataLoadGameAgain(bool IsLoadGameAgain)
     {
-        inforPlayer.idLoadGameAgain = IsLoadGameAgain;
+        inforPlayer.isLoadGameAgain = IsLoadGameAgain;
         SaveData();
     }
-
     public static void UpdateBestScore(int Score)
     {
         inforPlayer.bestScore = Score;
         SaveData();
     }
-
-    public static InforPlayer getInforPlayer()
+    public static void ChangeStateAudio(bool IsOnAudio)
+    {
+        inforPlayer.isOnAudio =IsOnAudio;
+        SaveData();
+    }
+    public static InforPlayer GetInforPlayer()
     {
         return inforPlayer;
     }
-
 }
 public class InforPlayer
 {
-    public bool idLoadGameAgain;
+    public bool isLoadGameAgain;
     public int bestScore;
+    public bool isOnAudio;
 }

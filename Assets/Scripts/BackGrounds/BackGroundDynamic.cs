@@ -31,6 +31,7 @@ public class BackGroundDynamic : Singleton<BackGroundDynamic>
         else
         {
             _allClouds.transform.Translate(-Vector3.right * _speedMove/10 * Time.deltaTime);
+
             if(_timeBornCloud>20f)
             {
                 _cloudsManager.BornNewCloud();
@@ -121,6 +122,4 @@ public class BackGroundDynamic : Singleton<BackGroundDynamic>
         _cloudsManager.idBg = idBg;
         return _cloudsManager;
     }
-
-
 }

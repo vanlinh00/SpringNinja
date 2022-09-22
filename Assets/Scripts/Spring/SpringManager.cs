@@ -7,8 +7,8 @@ public class SpringManager : Singleton<SpringManager>
     [SerializeField] GameObject _springRight;
     [SerializeField] GameObject _springLeft;
 
-    public  Spring springR;
-    public  Spring springL;
+    public Spring springR;
+    public Spring springL;
     protected override void Awake()
     {
         base.Awake();
@@ -18,7 +18,6 @@ public class SpringManager : Singleton<SpringManager>
         springR = _springRight.GetComponent<Spring>();
         springL = _springLeft.GetComponent<Spring>();
     }
-
    public void SqueezeAllSpring()
     {
         springR.SqueezeSpring();
@@ -26,8 +25,8 @@ public class SpringManager : Singleton<SpringManager>
     }
     public void StretchAllSpring()
     {
-        springR.isStretch = true;
-        springL.isStretch = true;
+        springR.isCompress = true;
+        springL.isCompress = true;
     }
     public void ResetScale()
     {

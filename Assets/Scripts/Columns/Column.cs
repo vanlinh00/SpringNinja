@@ -6,7 +6,6 @@ public class Column : MonoBehaviour
 {
     [SerializeField] GameObject _collisionScore;
     [SerializeField] GameObject _headerCol;
-   
     public Vector3 PosHeader()
     {
         return new Vector3(transform.position.x, transform.position.y + transform.lossyScale.x * 13.26f/2, 0);
